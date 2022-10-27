@@ -1,0 +1,98 @@
+#movedToVault authServer:
+  host: BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlwdc0xSbf1g7BpqGuRS+B0msyNps92PdLwBLS9I1QXB3vcwwuDtNG/9cOYm6Z3ntAm45/rBuh5JryjGBRGLr2Gi4taWuM68yyvPTcTIT3H+avwLxXnA0qO3H4jGG4c90pfsoobfRDa52JC1Q5ytxdpCfQ6h7KOe6BqcuCowB9O2wZqZ6wPzPp3c41S3QgJK+CNfK+/9RueAF/rpCD+qMctHjhr/yNU2+Ccaw+bgt0bUlo6ZAtJM8WRa51qGXuUs2mVc2SNsQOYtdmXBIV0FvmfBpx5ptV54pxMkFhXhBEvMDJGRZnCdlmk80Z6g2IoHWu4NQiHpff3DI9DrN4BsAAQIDAQAB-----END PUBLIC KEY-----
+  :orion-dev,orion:amdocs
+
+######################################################################################################
+# Application Properties
+######################################################################################################
+logstash: 
+ tcpConfig: 
+  hostname: ${LOGSTASH_HOSTNAME}
+  port: ${LOGSTASH_PORT}
+redis:
+  host: ${vcap.services.orion-redis-bus.credentials.host}
+  port: ${vcap.services.orion-redis-bus.credentials.port}
+  password: ${vcap.services.orion-redis-bus.credentials.password}
+  timeUnit: SECONDS
+  timeToLive: 
+  elapseTime: 240
+fallback:
+  endpoint: ${ORIONGATEWAY_HOST}/fallback/v1/insert
+  insert:
+    endPoint: ${ORIONGATEWAY_HOST}/fallback/v1/insert
+  getDetails:
+    endPoint: ${ORIONGATEWAY_HOST}/fallback/v1/getFallBackRequestDetails
+  getAllDetails:
+    endPoint: ${ORIONGATEWAY_HOST}/fallback/v1/getAllRequestDetails
+
+spring:
+  data:
+    mongodb:
+      uri: ${vcap.services.orion-mongo-bus.credentials.uri}
+    redis:
+      repositories:
+        enabled: true  
+  zipkin: 
+    enabled: true
+    baseUrl: ${ZIPKIN_URL}
+onp:
+  orderkey: orderingKey
+  fallbackstatus: 2
+  kafka:
+    bootstrap-servers:  orionmwkafka-as-b1t.sys.comcast.net:9092,orionmwkafka-as-b2t.sys.comcast.net:9092,orionmwkafka-as-b3t.sys.comcast.net:9092,orionmwkafka-ho-b1t.sys.comcast.net:9092,orionmwkafka-ho-b2t.sys.comcast.net:9092,orionmwkafka-ho-b3t.sys.comcast.net:9092
+    topic: onp-tnactivationfeaturestatusupdate-vms-topic
+    containerConcurrency: 3
+    consumer:
+      group-id: onp-tnactivationfeaturestatusupdate-vms-bus
+    maxrequestsize: 2097152
+    isolationLevel: read_committed
+    #org.apache.kafka.common.config.ConfigException: request.timeout.ms should be greater than session.timeout.ms and fetch.max.wait.ms
+    sessionTimeoutMs: 120000
+    #requestTimeoutMs: 200000
+    retryBackOffMs: 5000
+    retryAttempts: 5
+    enableAutoCommit: false  
+supportService:
+  endpoint: ${ORIONGATEWAY_HOST} 
+  getOMWServicePath: /orionsupport/v1/omwservice/
+  serviceName: ORIONSUPPORT
+  serviceDiscovery: false
+#US1841700 properties starts 
+onpKafkaListener:
+  id: onpKafkaListener
+integration:
+  threadPoolTaskExecutor:
+   corePoolSize: 10
+   maxPoolSize: 50
+   waitForJobsToCompleteOnShutdown: true
+  messageGroupStoreReaper:
+   timeout: 60000  
+#US1841700 properties ends
+alert: 
+ rabbitmq: 
+  exchange: alert-notification.exchange
+  routingKey: alert-notification.key
+  queue: alert-notification.queue
+  host: ${vcap.services.OMW-RabbitMQ.credentials.protocols.amqp.host}
+  user: ${vcap.services.OMW-RabbitMQ.credentials.protocols.amqp.username}
+  password: ${vcap.services.OMW-RabbitMQ.credentials.protocols.amqp.password}
+  port: 5672
+onpAction:
+  reusme: resume
+  pause: pause
+  waitTime: 10000
+downstreamname: 
+  downstreamoperation: 
+    endpoint: ${ORIONGATEWAY_HOST}/baseadapter/v1/processNotification
+######################################################################################################
+# Hystrix configuration
+######################################################################################################  
+  
+hystrix: 
+  command: 
+    downstreamOperationHystrix:
+      execution: 
+        isolation:
+          thread: 
+            timeoutInMilliseconds: 30000
+
