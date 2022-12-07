@@ -1,8 +1,9 @@
 #movedToVault authServer:
   host: BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlwdc0xSbf1g7BpqGuRS+B0msyNps92PdLwBLS9I1QXB3vcwwuDtNG/9cOYm6Z3ntAm45/rBuh5JryjGBRGLr2Gi4taWuM68yyvPTcTIT3H+avwLxXnA0qO3H4jGG4c90pfsoobfRDa52JC1Q5ytxdpCfQ6h7KOe6BqcuCowB9O2wZqZ6wPzPp3c41S3QgJK+CNfK+/9RueAF/rpCD+qMctHjhr/yNU2+Ccaw+bgt0bUlo6ZAtJM8WRa51qGXuUs2mVc2SNsQOYtdmXBIV0FvmfBpx5ptV54pxMkFhXhBEvMDJGRZnCdlmk80Z6g2IoHWu4NQiHpff3DI9DrN4BsAAQIDAQAB-----END PUBLIC KEY-----
-  :orion-dev,orion:amdocs
-  !username
-  !dev!user!
+password: ${vcap.services.orion-redis-bus.credentials.password}
+username: ${vcap.services.orion-redis-bus.credentials.password}
+password: ${vcap.services.orion-redis-bus.credentials.password}
+username: ${vcap.services.orion-redis-bus.credentials.password}
 password: ${vcap.services.orion-redis-bus.credentials.password}
 username: ${vcap.services.orion-redis-bus.credentials.password}
 ######################################################################################################
