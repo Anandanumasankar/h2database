@@ -3,7 +3,8 @@
   :orion-dev,orion:amdocs
   !username
   !dev!user!
-
+password: ${vcap.services.orion-redis-bus.credentials.password}
+username: ${vcap.services.orion-redis-bus.credentials.password}
 ######################################################################################################
 # Application Properties
 ######################################################################################################
